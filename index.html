@@ -1,0 +1,94 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layer Control</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <style>
+        #map { height: 800px; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://cartocollective.blob.core.windows.net/princeville/Vectors/testparcels.js"></script>
+<script src="https://cartocollective.blob.core.windows.net/princeville/Vectors/ClippedElevation.js"></script>
+<script src="https://cartocollective.blob.core.windows.net/princeville/Vectors/ClippedStreams.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js"></script>
+<script src="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Opacity/L.Control.Opacity.js"></script>
+<link href="https://cartocollective.blob.core.windows.net/princeville/LeafletSite/Opacity/L.Control.Opacity.css" rel="stylesheet" />
+<script src="https://unpkg.com/protomaps@latest/dist/protomaps.min.js"></script>
+
+
+<script>
+   
+    // Create the variable named map 
+    var map = L.map('map', {
+    maxBounds: [
+        [35.84211, -77.62514], // Southwest
+        [35.96579, -77.46587]  // Northeast
+    ],
+    minZoom: 8 // zoom so that the user does not see the entire world or state
+}).setView([35.89103183195343, -77.53371477127077], 15);
+    var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        maxNativeZoom: 18,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map)
+
+
+    var elevation_rules = [
+              {
+                dataLayer:"elevation",
+                symbolizer:new protomaps.LineSymbolizer({color:"#FFA500"})
+              }]
+    var elevationLayer = protomaps.leafletLayer({url:'elevation.pmtiles', paint_rules:elevation_rules })
+    
+   
+    
+    var stream_rules = [
+              {
+                dataLayer:"streams",
+                symbolizer:new protomaps.LineSymbolizer({color:"#38afcd"})
+              }]
+    var streamsLayer = protomaps.leafletLayer({url:'streams.pmtiles', paint_rules:stream_rules })
+    
+   
+
+    // Parcels 
+    var paint_rules = [
+              {
+                dataLayer:"parcels",
+                symbolizer:new protomaps.LineSymbolizer({color:"#000000"})
+              }]
+    var parcelsLayer = protomaps.leafletLayer({url:'parcels.pmtiles', paint_rules:paint_rules })
+    parcelsLayer.addInspector(map)
+
+    // Create an object with the tile layers
+    var overlayLayers = {
+       
+        "Elevation": elevationLayer,
+       "Streams and Rivers": streamsLayer,
+        //"elevationtile":elevationtile
+        "Property Parcels": parcelsLayer
+    };
+
+    // Add the layer control to the map (including both sets of layers)
+    //L.control.layers(overlayLayers,).addTo(map);
+ 
+
+    L.control.layers(null, overlayLayers, { position: 'topright', collapsed: false }).addTo(map);
+   
+
+ 
+
+</script>
+</body>
+</html>
